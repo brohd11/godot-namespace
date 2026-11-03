@@ -3,6 +3,7 @@ extends RefCounted
 #! remote
 const UFile = preload("uid://bqfy5cvhth0m1") #! resolve UtilR.Files.UFile
 const GetFiles = preload("uid://2kt1rv8kqr3u") #! resolve UtilR.Files.GetFiles
+const PackageCfg = preload("uid://ddo8w07hts45v") #! resolve GDPackageSpec.Cfg
 
 @warning_ignore_start("static_called_on_instance")
 
@@ -14,7 +15,7 @@ enum ConfigError {
 const _RES = "res://"
 
 ## Files that may carry a [namespace] section. All are treated identically.
-const CONFIG_NAMES = ["plugin.cfg", "addon.cfg", "version.cfg", "namespace.cfg"]
+const CONFIG_NAMES = PackageCfg.NAMES + ["namespace.cfg"] # namespace.cfg is namespace's own
 const SECTION = "namespace"
 const PATH_KEY = "path"
 const EXCLUDE_KEY = "exclude"
