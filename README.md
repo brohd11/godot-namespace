@@ -83,7 +83,7 @@ The console can be found in the output tab:
 
 A library that ships namespace tags would normally dump its generated files into whatever central directory the person downloading it happens to use. To keep a library self contained, it can claim its own class names and say where they should be built.
 
-Add a `[namespace]` section to the library's `plugin.cfg` or `version.cfg`. If it has neither, create a `namespace.cfg` instead. All three are read the same way:
+Add a `[namespace]` section to the library's `plugin.cfg` or `package.cfg` (legacy `addon.cfg` and `version.cfg` are read too). If it has none, create a `namespace.cfg` instead. All are read the same way:
 
 ```ini
 [namespace]
@@ -124,7 +124,7 @@ When accessing the namespace class, there is a code completion plugin that will 
 
 Because you access this as a global class, you could move these files wherever needed without issues. For example into a plugin for a release package. You would move the top level namespace file needed and the folder of the same name.
 
-Alternatively, you can use my [Package Exporter](https://github.com/brohd11/godot-package-exporter) to keep them in a central spot and package them in with your plugin on export. This is handy for utilities or modules you use in multiple projects.
+Alternatively, you can use my [GDPackage](https://github.com/brohd11/godot-gdpackage) to keep them in a central spot and package them in with your plugin on export. This is handy for utilities or modules you use in multiple projects.
 
 ### Sub Plugins
 
