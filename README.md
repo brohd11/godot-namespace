@@ -4,59 +4,62 @@ This plugin will generate files that will organize your classes somewhat like a 
 
 <img width="395" height="58" alt="namespace_hl" src="https://github.com/user-attachments/assets/9556356b-c00f-4c51-bca0-ed8cd4252e37" />
 
-This is an example of how the syntax highlighter will interact with the namespace declaration, and how you would access a class from the generated file.
- - ALib is the "namespace"
- - Runtime a subclass
- - UTree and UFile are the actual classes to be used
+## Install
+
+This plugin uses external dependencies packaged with [GDPackage](https://github.com/brohd11/godot-gdpackage.git),
+download the latest package from releases, it includes the required dependencies.
+
+The dependency repos can be found in the require key of [plugin.cfg](./plugin.cfg)
+
+You can also use [gdaddon](https://github.com/brohd11/gdaddon) to manage the installation.
+It is a TUI package/repo manager that can install and update addons for you.
+
+In your project:
+```sh
+gdaddon install brohd11/godot-namespace/release
+```
 
 
-### How to Use
+## How to Use
 
-First off, be sure to save all files before running the build. I have had a bug where scripts that were moved from one namespace to another were unlinked in the script editor and needed to be reloaded. I believe this is solved now, however, I still recommend saving all open scripts beforehand.
+Note: Before running the generator script, save all open scripts.
 
-You can create a namespace by writing a tag near the top of your script (within the top 10 lines).
-"#!" must proceed the declaration.
-
+Choose where your script will live in the namespace, near the top of the file, define your desired class path:
 ``` 
 extends SomeClass
-#! namespace MyNameSpace class ThisClass
+#! namespace MyNameSpace.SubSpace class ThisClass
 ```
 
-Alternatively, you can leave out the class keyword.
+This layout generates 2 files, `MyNameSpace` a global class that preloads `SubSpace`. Intermediate classes need to be actual files, because inner classes will cause script caching errors when re-generating.
 
-``` 
-extends SomeClass
-#! namespace MyNameSpace.ThisClass
+Once you have your files laid out, you can build a couple of ways:
+- Run the editor script `res://addons/namespace/run_editor.gd`
+- Run from [Editor Console](https://github.com/brohd11/godot-editor-console): `namespace build`
+- Run from command line: `godot --headless --path . --script res://addons/namespace/run_headless.gd [-- <flags>]`
+
+If there are existing namespace files it will parse all scripts in your project to check if your new configuration will break any references. It will list any conflicts and you can decide to proceed or not, before the existing files are deleted and regenerated.
+
+### Generation Directory
+
+By default, the namespace files are generated in `res://namespace_classes/`. You can change this in project settings or using Editor Console `namespace set-dir <my/dir>`.
+
+You can also change where certain namespaces are created by setting up a namespace config file. Accepted files are `plugin.cfg`, `package.cfg`, and `namespace.cfg`. There should be a section `[namespace]` with a path key, `path=""`. An empty path defaults to `_ns/`, otherwise declare a relative path.
+
+```ini
+[namespace]
+path="ns"
 ```
 
-This will generate the file `my_name_space.gd` as global class `MyNameSpace`.
+Any files found with the config file's tree will be generated within the `path` directory. This is useful for something like a plugin or a library where you want to keep the generate files within the package.
 
-Inside, it will have the script preloaded to provide access to the class:
 
-`const ThisClass = preload("uid_for_this_class")`
+## Other Plugins
 
-The files generated use UIDs to preload the class, so they are resilient to moving around files.
+These plugins used to be packaged with this one. They are now separately managed to reduce the size of this release. They can be downloaded and will provide some nice features.
 
-On the left of the image below is the top level "ALib" this is my namespace from the example at the beginning, on the right is the "Runtime" level that is preloaded in the namespace.
+### SyntaxPlus
 
-<img width="2138" height="564" alt="NamespaceGeneratedFile" src="https://github.com/user-attachments/assets/d6fd2392-f6b3-4285-9d90-ac8292e20731" />
-
-Note: the one green file is one that still has a global class defined, this is not from this plugin.
-
-You can do as many sub classes as you want:
-
-``` 
-#! namespace MyNameSpace.SubSpace.Sub.Sub.Sub class ThisClass
-or
-#! namespace MyNameSpace.SubSpace.Sub.Sub.Sub.ThisClass
-```
-
-Each sub class will be another file created in the namespace directory.
-The last identifier will always be the current scripts identifier.
-
-I tried to do this using inner classes in one file, but there was a bug I could not get around. It would be preferable, but this is how it will be for now.
-
-If you have the syntax highlighter "SyntaxPlus" active, there will be a few (configurable) colors that you will see when defining the namespace. These can be adjusted in Editor Settings.
+If you have the [SyntaxPlus](https://github.com/brohd11/godot-syntax-plus.git) syntax highlighter active, there will be a few (configurable) colors that you will see when defining the namespace. These can be adjusted in Editor Settings.
 
 These will always apply:
  - Green - A new namespace or class declaration
@@ -67,71 +70,12 @@ These will appear once files are generated:
  - Light Blue - The current script's namespace location
  - Dark Red - Name clash with another member in the namespace
 
+### Code Completions
 
-Once you have your initial scripts setup, you can set the location for your generated classes. The default is  within the namespace plugin folder. You can do this in the project settings, or from the EditorConsole plugin:
+With the [Code Completions](https://github.com/brohd11/godot-code-completions) plugin, you will get completions for the
+namespace tag and existing name spaces and sub spaces.
 
-`namespace set-dir -- my/dir`
+### Editor Console
 
-The console can be found in the output tab:
+There are a few commands you can run from the console. 
 
-<img width="1026" height="284" alt="NamespaceEditorConsoleedit" src="https://github.com/user-attachments/assets/692597fb-8110-495a-b4f5-bd683e124aec" />
-
-
-"res://" will be added to the front if you use a relative path. Every generated file in this directory is erased and rewritten each build. Files this plugin did not write are left alone, but don't rely on that for anything you care about.
-
-### Building elsewhere
-
-A library that ships namespace tags would normally dump its generated files into whatever central directory the person downloading it happens to use. To keep a library self contained, it can claim its own class names and say where they should be built.
-
-Add a `[namespace]` section to the library's `plugin.cfg` or `package.cfg` (legacy `addon.cfg` and `version.cfg` are read too). If it has none, create a `namespace.cfg` instead. All are read the same way:
-
-```ini
-[namespace]
-path="ns"
-```
-
-That is usually the whole thing. The section claims **every namespace tagged anywhere under its own directory**, so there is no list to keep in step with your scripts. Add a new class with a `#! namespace MyLib.Whatever` tag inside the library and it is picked up on the next build.
-
-- `path` is relative to the config file, so this builds into `addons/my_lib/ns/`. It is optional and defaults to `namespace`. An absolute `res://` path also works. Paths that escape the project are rejected.
-- Only **top level** names are ever claimed, the ones that become a `class_name`. Claiming a name takes its whole tree with it, so `MyLib` also covers `MyLib.Utils.Whatever`.
-
-A claim is global once made. The directory decides *which* namespaces are claimed, but the whole tree then builds into that one place, including tags for it that live elsewhere in the project.
-
-Anything not claimed goes to the default directory as before, so a project with no `[namespace]` section behaves exactly as it always has.
-
-If you want a namespace tagged inside your directory to be left alone, opt it out:
-
-```ini
-[namespace]
-path="ns"
-exclude=["SharedThing"]
-```
-
-When configs are nested, the nearest one wins, so a submodule keeps its own namespaces even if a parent directory also has a section. An excluded name falls through to the next config up rather than straight to the default, which is how you hand a namespace to a parent.
-
-If a namespace is tagged under two unrelated config directories, that is ambiguous: the first by path wins and the clash is reported. Run `namespace config` to see what is claimed, where it builds, and which config claimed it.
-
-Note that a `.gdignore`d folder is skipped entirely, so a config placed inside one will not be found.
-
-Now you can run the build process by either running the EditorScript "namespace_builder.gd",
-or from the console:
-
-`namespace build`
-
-If there are existing namespace files it will parse the existing files and all scripts in your projects to check if your new configuration will break any references. It will list them any conflicts and you can decide whether to proceed or not, before the existing files are deleted and regenerated.
-
-When accessing the namespace class, there is a code completion plugin that will activate. It will get rid of the inherited refcounted members and show only the declared members. If you have existing namespace files, it will also display members when declaring a namespace. It will show the object icon if the member is a generated file, and a script icon if the member is from outside of the generation directory.
-
-Because you access this as a global class, you could move these files wherever needed without issues. For example into a plugin for a release package. You would move the top level namespace file needed and the folder of the same name.
-
-Alternatively, you can use my [GDPackage](https://github.com/brohd11/godot-gdpackage) to keep them in a central spot and package them in with your plugin on export. This is handy for utilities or modules you use in multiple projects.
-
-### Sub Plugins
-
-The plugin includes 2 sub plugins, EditorConsole and SyntaxPlus.
-
-The console provides a quick way to build and set the directory without having to run the script as an EditorScript or going into ProjectSettings. `namespace config` lists any classes redirected by a `[namespace]` section, and `namespace config --files` shows every config file that was found.
-
-SyntaxPlus will provide highlighting for the namespace declaration, telling you if a new space is being created, if there is a conflict or if you are shadowing a global class. This highlighter is the basic GDScript highlighter with some extra rules on top such as highlighting CONSTANTS and PascalCase variables. These can be disabled individually if you just want the vanilla highlighter. You can also set it as the default highlighter in EditorSettings, then you don't need to select it each time.
-
-Both are just QoL enhancements, and can be disabled if desired.
