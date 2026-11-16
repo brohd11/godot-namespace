@@ -1,6 +1,5 @@
 @tool
 extends RefCounted
-#! remote
 
 const Confirmation = preload("uid://dwhlbgevd62gg") #! resolve Dialogs.Handlers.Confirmation
 const UFile = preload("uid://bqfy5cvhth0m1") #! resolve UtilR.Files.UFile
@@ -17,7 +16,7 @@ const NamespaceSingleton = preload("res://addons/namespace/src/namespace_singlet
 const _RES = "res://"
 const GEN_DIR_PROJECT_SETTING = "plugin/namespace/directory"
 
-const GENERATED_DIR = "res://namespace_classes/" #! ignore-remote
+const GENERATED_DIR = "res://namespace_classes/" #! gdp-ignore
 const NAMESPACE_TAG = "#! namespace "
 
 ## Marks a file as owned by this tool. Deletion and class discovery both key off

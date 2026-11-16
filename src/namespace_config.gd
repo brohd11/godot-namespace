@@ -1,6 +1,5 @@
 @tool
 extends RefCounted
-#! remote
 const UFile = preload("uid://bqfy5cvhth0m1") #! resolve UtilR.Files.UFile
 const GetFiles = preload("uid://2kt1rv8kqr3u") #! resolve UtilR.Files.GetFiles
 const PackageCfg = preload("uid://ddo8w07hts45v") #! resolve GDPackageSpec.Cfg

@@ -1,4 +1,4 @@
-#! pe-skip-parse
+#! gdp-skip-parse
 extends EditorCodeCompletion
 
 const NamespaceBuilder = preload("res://addons/namespace/src/namespace_builder.gd")

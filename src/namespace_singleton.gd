@@ -8,6 +8,7 @@ const CheckInstance = preload("uid://cnx1roduh82r") #! resolve Singletons.CheckI
 ## must stay inside this plugin while this one gets rewritten on export.
 const RuntimeExtend = preload("uid://d222tctvfbhp2") #! resolve Singletons.RuntimeExtend
 
+#! gdp-strip-cast PE_STRIP_CAST_SCRIPT
 const PE_STRIP_CAST_SCRIPT = preload("res://addons/namespace/src/namespace_singleton.gd")
 
 static func get_singleton_name() -> String:
