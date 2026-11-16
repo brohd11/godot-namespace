@@ -34,11 +34,6 @@ exports:
     source: "res://addons/namespace"
     export_name: "namespace{{version=res://addons/namespace}}"
     export_folder: addons/namespace
-    exclude:
-      directories:
-        - "res://addons/namespace/_export_ignore"
-      file_extensions: []
-      files: []
     other_transfers:
       - to: src/plugins/.gdignore
       -
@@ -46,9 +41,3 @@ exports:
         to: src/plugins/
         recursive: true
         ignore_deps: true
-    parser_overide_settings:
-      parse_cs: {}
-      parse_gd: {}
-      parse_tscn: {}
-      parse_tres: {}
-    remote_dir: "res://addons/namespace/src/remote"
