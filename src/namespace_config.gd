@@ -14,8 +14,6 @@ enum ConfigError {
 
 const _RES = "res://"
 
-## Files that may carry a [namespace] section. All are treated identically.
-const CONFIG_NAMES = PackageCfg.NAMES + ["namespace.cfg"] # namespace.cfg is namespace's own
 const SECTION = "namespace"
 const PATH_KEY = "path"
 const EXCLUDE_KEY = "exclude"
@@ -53,7 +51,13 @@ static func has_fatal(errors:Array) -> bool:
 	return false
 
 
-## Every .cfg in the project whose name is in CONFIG_NAMES, sorted by full path.
+## Files that may carry a [namespace] section. All are treated identically. A func, not a const:
+## Godot 4.6 won't fold another script's const into a constant expression.
+static func get_config_names() -> Array:
+	return PackageCfg.NAMES + ["namespace.cfg"] # namespace.cfg is namespace's own
+
+
+## Every .cfg in the project whose name is in get_config_names(), sorted by full path.
 ## Sorting makes the "first claim wins" rule a total order that is obvious from
 ## the config paths alone.
 static func find_config_files(root:=_RES) -> Array:
@@ -62,8 +66,9 @@ static func find_config_files(root:=_RES) -> Array:
 	search.file_extensions = ["cfg"]
 	search.ignore_dir_names = [".git"]
 	var files = search.get_files()
+	var config_names = get_config_names()
 	for path in files:
-		if path.get_file() in CONFIG_NAMES:
+		if path.get_file() in config_names:
 			config_files.append(path)
 	config_files.sort()
 	return config_files
