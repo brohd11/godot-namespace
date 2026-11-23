@@ -1,5 +1,4 @@
-#! gdp-skip-parse
-extends EditorConsoleSingleton.CommandBase
+extends "res://addons/_lib/gdsh/src/core/command_base.gd" #! gdp-ignore
 
 const NamespaceBuilder = preload("res://addons/namespace/src/namespace_builder.gd")
 const NamespaceConfig = preload("res://addons/namespace/src/namespace_config.gd")

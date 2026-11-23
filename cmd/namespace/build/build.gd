@@ -1,5 +1,4 @@
-#! gdp-skip-parse
-extends EditorConsoleSingleton.CommandBase
+extends "res://addons/_lib/gdsh/src/core/command_base.gd" #! gdp-ignore
 
 const NamespaceBuilder = preload("res://addons/namespace/src/namespace_builder.gd")
 
@@ -35,6 +34,10 @@ func _get_flags() -> Dictionary:
 
 
 func _execute(ctx:Context):
+	# Headless (the gdsh CLI) has no plugin to set the output dir and no dialogs, as in run_headless.gd.
+	if not Engine.is_editor_hint():
+		NamespaceBuilder.set_generated_dir_default()
+		no_dialog_flag = true
 	# A missing key opens that dialog, so without --no_dialog flags only preset a yes.
 	var answers = {}
 	if no_dialog_flag:

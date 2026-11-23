@@ -36,6 +36,7 @@ exports:
     export_folder: addons/namespace
     other_transfers:
       - to: src/plugins/.gdignore
+      - to: cmd/.gdignore
       -
         from: res://addons/namespace/_export_ignore/plugins/
         to: src/plugins/

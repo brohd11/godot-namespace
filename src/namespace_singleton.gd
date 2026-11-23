@@ -41,8 +41,5 @@ func is_in_namespace_dir(path:String) -> bool:
 static func get_syntax_plus():
 	return CheckInstance.get_instance("SyntaxPlusSingleton")
 
-static func get_editor_console():
-	return CheckInstance.get_instance("EditorConsoleSingleton")
-
 static func get_code_completion():
 	return CheckInstance.get_instance("EditorCodeCompletionSingleton")

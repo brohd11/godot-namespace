@@ -4,19 +4,15 @@ extends EditorPlugin
 const NamespaceBuilder = preload("res://addons/namespace/src/namespace_builder.gd")
 const NamespaceSingleton = preload("res://addons/namespace/src/namespace_singleton.gd")
 
-#const ConsoleCommand = preload("res://addons/namespace/_export_ignore/plugins/console_command/console_command.gd")
-#
 #const DeclarationCodeCompletion = preload("res://addons/namespace/_export_ignore/plugins/declaration_code_completion.gd")
 #const SyntaxHighlighting = preload("res://addons/namespace/_export_ignore/plugins/syntax_highlighting.gd")
 
-const ConsoleCommandPath = "res://addons/namespace/_export_ignore/plugins/console_command/console_command.gd"
 const DeclarationCodeCompletionPath = "res://addons/namespace/_export_ignore/plugins/declaration_code_completion.gd"
 const SyntaxHighlightingPath = "res://addons/namespace/_export_ignore/plugins/syntax_highlighting.gd"
 
 const PLUGIN_NAME = "Namespace"
 
 var syntax_highlighting
-var console_command_script
 var declaration_code_completion
 
 func _get_plugin_name() -> String:
@@ -52,14 +48,7 @@ func _setup():
 			sp_ins.call_on_ready(_register_syntax_data)
 	
 	
-	var ed_console = NamespaceSingleton.get_editor_console()
-	if is_instance_valid(ed_console):
-		# Held here: outside the resource cache, so nothing else keeps it or its subcommands alive.
-		console_command_script = NamespaceSingleton.RuntimeExtend.build_from_singleton(ConsoleCommandPath, "EditorConsoleSingleton", "CommandBase")
-		if is_instance_valid(console_command_script):
-			ed_console.register_node(self)
-			ed_console.register_temp_scope("namespace", console_command_script)
-	
+	# The `namespace` gdsh command needs no registration: hosts find it in cmd/.
 	
 	var code_comp = NamespaceSingleton.get_code_completion()
 	if is_instance_valid(code_comp):
@@ -72,11 +61,6 @@ func _setup():
 	NamespaceBuilder.refresh_cache()
 
 func _exit_tree() -> void:
-	var ed_console = NamespaceSingleton.get_editor_console()
-	if is_instance_valid(ed_console):
-		ed_console.remove_temp_scope("namespace")
-		ed_console.unregister_node(self)
-	
 	#_unregister_syntax_data()
 	var sp_ins = NamespaceSingleton.get_syntax_plus()
 	if is_instance_valid(sp_ins):
